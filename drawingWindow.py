@@ -7,6 +7,8 @@ from PIL import Image
 # initiate pygame and give permission
 # to use pygame's functionality.
 pygame.init()
+pygame.display.set_caption('MNIST kNN Number Classifier')
+pygame.display.set_icon(pygame.image.load('icon.png'))
 
 WINDOW_SIZE = (600,800)
 CANVAS_SIZE = 600
