@@ -70,12 +70,14 @@ def createBlankImage():
     return image
 
 def defineClass(image):
+    K = 23
     pil_image = Image.fromarray(numpy.array(image, dtype=numpy.uint8))
-    determined_number = checkKNearestNeighbours(pil_image, k=23)
+    determined_classes = checkKNearestNeighbours(pil_image, k=K)
     
-    pygame.draw.rect(window, (255, 255, 255), [0, CANVAS_SIZE, CANVAS_SIZE, WINDOW_SIZE[1]-CANVAS_SIZE])
-    text = font.render(f"Num: {determined_number}", True, (255,0,0))
-    window.blit(text, (0, CANVAS_SIZE))
+    for i, _class in enumerate(determined_classes):
+        text = font.render(f"{_class[0]}  - {round(100 * (_class[1]/K), 2)}%", True, (255,0,0))
+        pygame.draw.rect(window, (255, 255, 255), [0, CANVAS_SIZE + (i * text.get_height()), CANVAS_SIZE, WINDOW_SIZE[1]-CANVAS_SIZE])
+        window.blit(text, (0, CANVAS_SIZE + (i * text.get_height())))
 
 
 image = createBlankImage()

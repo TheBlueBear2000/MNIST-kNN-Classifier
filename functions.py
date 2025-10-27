@@ -36,4 +36,7 @@ def checkKNearestNeighbours(input_data, dataset = getDataset(), k=11):
             neighbours['distances'][insert_index] = distance
             neighbours['classes'][insert_index] = item[1]
     
-    return max(set(neighbours['classes']), key=neighbours['classes'].count)
+    output = []
+    for item in set(neighbours['classes']):
+        output.append((item, neighbours['classes'].count(item)))
+    return sorted(output, key=lambda x: x[1], reverse=True)
