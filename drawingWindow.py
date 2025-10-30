@@ -1,7 +1,7 @@
 import pygame
 from time import sleep
 import numpy
-from functions import checkKNearestNeighbours
+from functions import checkKNearestNeighbours, hartAlgorithm, getDataset
 from PIL import Image
 
 # initiate pygame and give permission
@@ -74,7 +74,7 @@ def createBlankImage():
 def defineClass(image):
     K = 23
     pil_image = Image.fromarray(numpy.array(image, dtype=numpy.uint8))
-    determined_classes = checkKNearestNeighbours(pil_image, k=K)
+    determined_classes = checkKNearestNeighbours(pil_image, HART_TRAINING_DATASET, k=K)
     
     for i, _class in enumerate(determined_classes):
         text = font.render(f"{_class[0]}  - {round(100 * (_class[1]/K), 2)}%", True, (255,0,0))
@@ -82,9 +82,11 @@ def defineClass(image):
         window.blit(text, (0, CANVAS_SIZE + (i * text.get_height())))
 
 
+HART_TRAINING_DATASET = hartAlgorithm(getDataset(reduced_sample=False))
 image = createBlankImage()
 output_image = createBlankImage()
 draw_history = []
+
 
 while True:
     # Events

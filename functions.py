@@ -1,6 +1,8 @@
 from torchvision import datasets
 from random import randint
 from math import sqrt
+from helpers import printProgressBar
+from time import process_time
 
 SAMPLE_SIZE = 5000
 
@@ -12,10 +14,12 @@ def eudlideanDistance(image1_pix, image2_pix, imageDimensions=(28, 28)):
     #print("squared total:", squared_total)
     return sqrt(squared_total)
 
-def getDataset():
+def getDataset(reduced_sample=True, new_sample_size=SAMPLE_SIZE):
     train_dataset = datasets.MNIST(root='./data', train=True, download=True)
+    if not reduced_sample:
+        return list(train_dataset)
     sampled_dataset = []
-    for i in range(SAMPLE_SIZE):
+    for i in range(new_sample_size):
         sampled_dataset.append(train_dataset[randint(0, len(train_dataset)-1)])
     return sampled_dataset
 
@@ -40,3 +44,25 @@ def checkKNearestNeighbours(input_data, dataset = getDataset(), k=11):
     for item in set(neighbours['classes']):
         output.append((item, neighbours['classes'].count(item)))
     return sorted(output, key=lambda x: x[1], reverse=True)
+
+
+def hartAlgorithm(inputDataset):
+    start_time = process_time()
+    output_dataset = []
+    cleared_pass = False
+    passes = 0
+    while not cleared_pass:
+        passes += 1
+        cleared_pass = True
+        for i, item in enumerate(inputDataset):
+            if item != None:
+                if i%20 == 0:
+                    printProgressBar(i, len(inputDataset), prefix = f'Pass {passes}:', suffix = 'Complete')
+                predicted_states = checkKNearestNeighbours(item[0], output_dataset)
+                predicted_state = predicted_states[0] if len(predicted_states) > 0 else 10 # 10 is unobtainable, so the item will be added regardless if the output is empty
+                if predicted_state != item[1]:
+                    output_dataset.append(item)
+                    inputDataset[i] = None
+                    cleared_pass = False
+        print(f"Condensed dataset length is {len(output_dataset)}\nProcessing took {process_time() - start_time} seconds\n")
+    return output_dataset
